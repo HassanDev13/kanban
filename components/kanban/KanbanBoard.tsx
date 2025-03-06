@@ -19,79 +19,8 @@ import {
 import { Column as ColumnType, Task, User } from "./types";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@radix-ui/react-icons";
+import { initialColumns, users } from "./data";
 
-const initialColumns: Column[] = [
-    {
-      id: "todo",
-      title: "للقيام",
-      tasks: [
-        {
-          id: "task-1",
-          content: "إنشاء صفحة تسجيل الدخول",
-          priority: "high",
-          description:
-            "<p>تنفيذ صفحة تسجيل دخول آمنة مع حقول البريد الإلكتروني وكلمة المرور.</p><ul><li>تصميم واجهة المستخدم</li><li>تنفيذ التحقق من النموذج</li></ul>",
-          assignedTo: "user1",
-          checklist: [
-            { id: "check1", content: "تصميم واجهة المستخدم", isCompleted: false },
-            { id: "check2", content: "تنفيذ التحقق من النموذج", isCompleted: false },
-          ],
-        },
-        {
-          id: "task-2",
-          content: "تصميم مخطط قاعدة البيانات",
-          priority: "medium",
-          description: "<p>إنشاء مخطط قاعدة بيانات فعال للتطبيق.</p>",
-          checklist: [],
-        },
-      ],
-      limit: 4,
-    },
-    {
-      id: "in-progress",
-      title: "قيد التنفيذ",
-      tasks: [
-        {
-          id: "task-3",
-          content: "تنفيذ مصادقة المستخدم",
-          priority: "high",
-          description:
-            "<p>إعداد مصادقة المستخدم باستخدام رموز JWT.</p><ol><li>تنفيذ إنشاء JWT</li><li>إعداد مسارات محمية</li></ol>",
-          assignedTo: "user2",
-          checklist: [
-            { id: "check3", content: "تنفيذ إنشاء JWT", isCompleted: true },
-            { id: "check4", content: "إعداد مسارات محمية", isCompleted: false },
-          ],
-        },
-      ],
-      limit: 3,
-    },
-    {
-      id: "done",
-      title: "منتهي",
-      tasks: [
-        {
-          id: "task-4",
-          content: "إعداد المشروع",
-          priority: "low",
-          description:
-            "<p>تهيئة المشروع وإعداد بيئة التطوير.</p><ul><li>تثبيت التبعيات</li><li>تهيئة عملية البناء</li></ul>",
-          checklist: [
-            { id: "check5", content: "تثبيت التبعيات", isCompleted: true },
-            { id: "check6", content: "تهيئة عملية البناء", isCompleted: true },
-          ],
-        },
-      ],
-      limit: 5,
-    },
-  ];
-  
-  const users: User[] = [
-    { id: "user1", name: "أليس", avatar: "/placeholder.svg?height=32&width=32" },
-    { id: "user2", name: "بوب", avatar: "/placeholder.svg?height=32&width=32" },
-    { id: "user3", name: "تشارلي", avatar: "/placeholder.svg?height=32&width=32" },
-  ];
-  
 export function KanbanBoard() {
   const [columns, setColumns] = React.useState<ColumnType[]>(initialColumns);
   const [selectedTask, setSelectedTask] = React.useState<Task | null>(null);
@@ -102,15 +31,67 @@ export function KanbanBoard() {
   const [taskToDelete, setTaskToDelete] = React.useState<{ columnId: string; taskId: string } | null>(null);
 
   const handleDragEnd = (result: DropResult) => {
-    // ... (same as before)
+    const { source, destination, type } = result;
+
+    // If no destination, do nothing
+    if (!destination) return;
+
+    // Handle column dragging
+    if (type === "column") {
+      const newColumns = structuredClone(columns);
+      const [movedColumn] = newColumns.splice(source.index, 1);
+      newColumns.splice(destination.index, 0, movedColumn);
+      setColumns(newColumns);
+      return;
+    }
+
+    // Handle task dragging
+    const sourceColumn = columns.find((col) => col.id === source.droppableId);
+    const destColumn = columns.find((col) => col.id === destination.droppableId);
+
+    if (!sourceColumn || !destColumn) return;
+
+    if (destColumn.tasks.length >= destColumn.limit && source.droppableId !== destination.droppableId) {
+      toast.error(`لا يمكن إضافة المزيد من المهام إلى "${destColumn.title}" (الحد: ${destColumn.limit})`);
+      return;
+    }
+
+    const newColumns = structuredClone(columns);
+    const [movedTask] = newColumns.find((col) => col.id === source.droppableId)!.tasks.splice(source.index, 1);
+    const destCol = newColumns.find((col) => col.id === destination.droppableId)!;
+    if (source.droppableId === destination.droppableId) {
+      destCol.tasks.splice(destination.index, 0, movedTask);
+    } else {
+      destCol.tasks.splice(destination.index, 0, movedTask);
+    }
+    setColumns(newColumns);
   };
 
   const addColumn = (title: string) => {
-    // ... (same as before)
+    if (!title.trim()) {
+      toast.error("يرجى إدخال عنوان للعمود");
+      return;
+    }
+    setColumns([
+      ...columns,
+      {
+        id: `column-${Date.now()}`,
+        title,
+        tasks: [],
+        limit: 5,
+      },
+    ]);
+    toast.success(`تم إضافة عمود "${title}"`);
   };
 
   const removeColumn = (columnId: string) => {
-    // ... (same as before)
+    const column = columns.find((col) => col.id === columnId);
+    if (column?.tasks.length) {
+      toast.error("لا يمكن حذف عمود يحتوي على مهام");
+      return;
+    }
+    setColumns(columns.filter((col) => col.id !== columnId));
+    toast.success(`تم حذف عمود "${column?.title}"`);
   };
 
   const handleTaskSelect = (task: Task, column: ColumnType) => {
@@ -119,8 +100,8 @@ export function KanbanBoard() {
     setIsTaskDialogOpen(true);
   };
 
-  const confirmDeleteTask = (columnId: string, taskId: string) => {
-    setTaskToDelete({ columnId, taskId });
+  const confirmDeleteTask = (task: Task, column: ColumnType) => {
+    setTaskToDelete({ columnId: column.id, taskId: task.id });
     setIsDeleteDialogOpen(true);
   };
 
@@ -148,7 +129,7 @@ export function KanbanBoard() {
             <div
               {...provided.droppableProps}
               ref={provided.innerRef}
-              className="flex flex-col md:flex-row-reverse gap-4 overflow-x-auto pb-4"
+              className="flex flex-col md:flex-row-reverse gap-4 overflow-x-auto pb-4 min-h-[calc(100vh-120px)]"
             >
               {columns.map((column, index) => (
                 <Column
@@ -182,10 +163,10 @@ export function KanbanBoard() {
           }}
           onTaskCreate={(columnId, task) => {
             setColumns(columns.map((col) =>
-              col.id === columnId ? { ...col, tasks: [...col.tasks, { ...task, id: `task-${Date.now()}` }] } : col
+              col.id === columnId ? { ...col, tasks: [...colpurple.tasks, { ...task, id: `task-${Date.now()}` }] } : col
             ));
           }}
-          onRemoveTask={(taskId) => confirmDeleteTask(selectedColumn.id, taskId)}
+          onRemoveTask={(taskId) => confirmDeleteTask(selectedTask, selectedColumn)}
           users={users}
           mode="edit"
         />
@@ -195,15 +176,15 @@ export function KanbanBoard() {
       <TaskDialog
         open={isAddTaskModalOpen}
         onOpenChange={setIsAddTaskModalOpen}
-        column={columns[0]} // Default to first column
+        column={columns[0]}
         onTaskCreate={(columnId, task) => {
           setColumns(columns.map((col) =>
             col.id === columnId ? { ...col, tasks: [...col.tasks, { ...task, id: `task-${Date.now()}` }] } : col
           ));
           setIsAddTaskModalOpen(false);
         }}
-        onTaskUpdate={() => {}} // Not used in add mode
-        onRemoveTask={() => {}} // Not used in add mode
+        onTaskUpdate={() => {}}
+        onRemoveTask={() => {}}
         users={users}
         mode="add"
       />

@@ -12,9 +12,10 @@ interface ColumnProps {
   index: number;
   onRemoveColumn: (columnId: string) => void;
   onTaskSelect: (task: Task, column: ColumnType) => void;
+  onDeleteTask: (task: Task, column: ColumnType) => void;
 }
 
-export function Column({ column, index, onRemoveColumn, onTaskSelect }: ColumnProps) {
+export function Column({ column, index, onRemoveColumn, onTaskSelect, onDeleteTask }: ColumnProps) {
   return (
     <Draggable draggableId={column.id} index={index}>
       {(provided) => (
@@ -23,9 +24,9 @@ export function Column({ column, index, onRemoveColumn, onTaskSelect }: ColumnPr
           {...provided.draggableProps}
           className="w-full md:w-80 flex-shrink-0"
         >
-          <Card className="h-full">
+          <Card className="flex flex-col h-[calc(100vh-120px)]"> {/* Fixed height for the entire column */}
             <CardHeader
-              className="flex flex-row items-center justify-between space-y-0 pb-2"
+              className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0"
               {...provided.dragHandleProps}
             >
               <CardTitle className="text-sm font-medium">{column.title}</CardTitle>
@@ -40,13 +41,13 @@ export function Column({ column, index, onRemoveColumn, onTaskSelect }: ColumnPr
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 overflow-hidden p-0">
               <Droppable droppableId={column.id} type="task">
                 {(provided, snapshot) => (
                   <div
                     {...provided.droppableProps}
                     ref={provided.innerRef}
-                    className={`min-h-[200px] transition-colors ${
+                    className={`h-full no-scrollbar overflow-y-auto transition-colors ${
                       snapshot.isDraggingOver ? "bg-secondary/50" : ""
                     }`}
                   >
@@ -56,6 +57,7 @@ export function Column({ column, index, onRemoveColumn, onTaskSelect }: ColumnPr
                         task={task}
                         index={index}
                         onSelect={() => onTaskSelect(task, column)}
+                        onDeleteTask={() => onDeleteTask(task, column)}
                       />
                     ))}
                     {provided.placeholder}

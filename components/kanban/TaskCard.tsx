@@ -11,6 +11,7 @@ interface TaskCardProps {
   task: Task;
   index: number;
   onSelect: () => void;
+  onDeleteTask: () => void;
 }
 
 const priorityColors = {
@@ -25,7 +26,7 @@ const priorityLabels = {
   high: "مرتفع",
 };
 
-export function TaskCard({ task, index, onSelect }: TaskCardProps) {
+export function TaskCard({ task, index, onSelect, onDeleteTask }: TaskCardProps) {
   return (
     <Draggable draggableId={task.id} index={index}>
       {(provided) => (
@@ -33,7 +34,7 @@ export function TaskCard({ task, index, onSelect }: TaskCardProps) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className="mb-2 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+          className="m-2 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
           onClick={onSelect}
         >
           <CardContent className="p-4">
@@ -53,7 +54,14 @@ export function TaskCard({ task, index, onSelect }: TaskCardProps) {
                 <Badge className={`mr-2 ${priorityColors[task.priority]}`}>
                   {priorityLabels[task.priority]}
                 </Badge>
-                <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent onSelect from firing
+                    onDeleteTask();
+                  }}
+                >
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
