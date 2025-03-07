@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Trash2 } from "lucide-react";
-import { Task } from "./types";
+import { Priority, Task } from "./types";
 
 interface TaskCardProps {
   task: Task;
@@ -14,10 +14,11 @@ interface TaskCardProps {
   onDeleteTask: () => void;
 }
 
-const priorityColors = {
-  low: "bg-green-100 text-green-800",
-  medium: "bg-yellow-100 text-yellow-800",
-  high: "bg-red-100 text-red-800",
+
+const priorityColors: Record<Priority, string> = {
+  [Priority.Low]: "bg-green-100 text-green-800",
+  [Priority.Medium]: "bg-yellow-100 text-yellow-800",
+  [Priority.High]: "bg-red-100 text-red-800",
 };
 
 const priorityLabels = {
@@ -26,7 +27,12 @@ const priorityLabels = {
   high: "مرتفع",
 };
 
-export function TaskCard({ task, index, onSelect, onDeleteTask }: TaskCardProps) {
+export function TaskCard({
+  task,
+  index,
+  onSelect,
+  onDeleteTask,
+}: TaskCardProps) {
   return (
     <Draggable draggableId={task.id} index={index}>
       {(provided) => (

@@ -163,7 +163,7 @@ export function KanbanBoard() {
           }}
           onTaskCreate={(columnId, task) => {
             setColumns(columns.map((col) =>
-              col.id === columnId ? { ...col, tasks: [...colpurple.tasks, { ...task, id: `task-${Date.now()}` }] } : col
+              col.id === columnId ? { ...col, tasks: [...col.tasks, { ...task, id: `task-${Date.now()}` }] } : col
             ));
           }}
           onRemoveTask={(taskId) => confirmDeleteTask(selectedTask, selectedColumn)}

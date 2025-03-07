@@ -28,19 +28,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "../ui/label";
+import { Priority, Task } from "./types";
 
 interface ChecklistItem {
   id: string;
   content: string;
   isCompleted: boolean;
-}
-
-interface Task {
-  id: string;
-  content: string;
-  priority: string;
-  description: string;
-  checklist: ChecklistItem[];
 }
 
 interface Column {
@@ -64,7 +57,7 @@ interface TaskDialogProps {
   onRemoveTask: (columnId: string, taskId: string) => void;
   users: User[];
   mode: "add" | "edit";
-  initialPriority?: string;
+  initialPriority?: Priority;
 }
 
 export function TaskDialog({
@@ -77,11 +70,11 @@ export function TaskDialog({
   onRemoveTask,
   users,
   mode = "edit",
-  initialPriority = "medium",
+  initialPriority = Priority.Medium,
 }: TaskDialogProps) {
   const [title, setTitle] = React.useState(task?.content || "");
   const [description, setDescription] = React.useState(task?.description || "");
-  const [priority, setPriority] = React.useState(
+  const [priority, setPriority] = React.useState<Priority>(
     task?.priority || initialPriority
   );
   const [checklist, setChecklist] = React.useState<ChecklistItem[]>(
@@ -93,6 +86,24 @@ export function TaskDialog({
   );
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
 
+  React.useEffect(() => {
+    if (open) {
+      if (mode === "add") {
+        setTitle("");
+        setDescription("");
+        setPriority(initialPriority);
+        setChecklist([]);
+        setIsEditingDescription(true);
+      } else if (mode === "edit" && task) {
+        setTitle(task.content || "");
+        setDescription(task.description || "");
+        setPriority(task.priority || initialPriority);
+        setChecklist(task.checklist || []);
+        setIsEditingDescription(false);
+      }
+    }
+  }, [open, mode, task, initialPriority]);
+  
   const handleDescriptionSave = () => {
     if (mode === "edit" && task) {
       onTaskUpdate(task.id, { description });

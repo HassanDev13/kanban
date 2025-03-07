@@ -1,4 +1,4 @@
-import { Column as ColumnType, User } from "./types";
+import { Column as ColumnType, Priority, User } from "./types";
 
 export const initialColumns: ColumnType[] = [
   {
@@ -8,7 +8,7 @@ export const initialColumns: ColumnType[] = [
       {
         id: "task-1",
         content: "إنشاء صفحة تسجيل الدخول",
-        priority: "high",
+        priority: Priority.High,
         description:
           "<p>تنفيذ صفحة تسجيل دخول آمنة مع حقول البريد الإلكتروني وكلمة المرور.</p><ul><li>تصميم واجهة المستخدم</li><li>تنفيذ التحقق من النموذج</li></ul>",
         assignedTo: "user1",
@@ -20,7 +20,7 @@ export const initialColumns: ColumnType[] = [
       {
         id: "task-2",
         content: "تصميم مخطط قاعدة البيانات",
-        priority: "medium",
+        priority: Priority.Low,
         description: "<p>إنشاء مخطط قاعدة بيانات فعال للتطبيق.</p>",
         assignedTo: "user3",
         checklist: [
@@ -31,7 +31,7 @@ export const initialColumns: ColumnType[] = [
       {
         id: "task-5",
         content: "إعداد واجهة برمجية للبحث",
-        priority: "medium",
+        priority: Priority.Medium,
         description: "<p>تطوير API للبحث في قاعدة البيانات.</p>",
         assignedTo: "user4",
         checklist: [
@@ -42,7 +42,7 @@ export const initialColumns: ColumnType[] = [
       {
         id: "task-6",
         content: "تصميم شعار التطبيق",
-        priority: "low",
+        priority: Priority.Low,
         description: "<p>إنشاء شعار جذاب للتطبيق.</p>",
         assignedTo: "user5",
         checklist: [],
@@ -57,7 +57,7 @@ export const initialColumns: ColumnType[] = [
       {
         id: "task-3",
         content: "تنفيذ مصادقة المستخدم",
-        priority: "high",
+        priority: Priority.High,
         description:
           "<p>إعداد مصادقة المستخدم باستخدام رموز JWT.</p><ol><li>تنفيذ إنشاء JWT</li><li>إعداد مسارات محمية</li></ol>",
         assignedTo: "user2",
@@ -69,7 +69,7 @@ export const initialColumns: ColumnType[] = [
       {
         id: "task-7",
         content: "تطوير واجهة المستخدم لصفحة الملف الشخصي",
-        priority: "medium",
+        priority: Priority.Medium,
         description: "<p>تصميم وتطوير صفحة الملف الشخصي.</p>",
         assignedTo: "user6",
         checklist: [
@@ -81,7 +81,7 @@ export const initialColumns: ColumnType[] = [
       {
         id: "task-8",
         content: "إعداد خادم النسخ الاحتياطي",
-        priority: "high",
+        priority: Priority.High,
         description: "<p>إعداد نظام نسخ احتياطي تلقائي.</p>",
         assignedTo: "user7",
         checklist: [
@@ -99,7 +99,7 @@ export const initialColumns: ColumnType[] = [
       {
         id: "task-9",
         content: "مراجعة كود واجهة المستخدم",
-        priority: "medium",
+        priority: Priority.Medium,
         description: "<p>مراجعة الكود للتأكد من الجودة.</p>",
         assignedTo: "user8",
         checklist: [
@@ -110,7 +110,7 @@ export const initialColumns: ColumnType[] = [
       {
         id: "task-10",
         content: "اختبار التطبيق على الأجهزة المحمولة",
-        priority: "high",
+        priority: Priority.High,
         description: "<p>اختبار التطبيق على أجهزة مختلفة.</p>",
         assignedTo: "user9",
         checklist: [
@@ -129,7 +129,7 @@ export const initialColumns: ColumnType[] = [
       {
         id: "task-4",
         content: "إعداد المشروع",
-        priority: "low",
+        priority: Priority.Low,
         description:
           "<p>تهيئة المشروع وإعداد بيئة التطوير.</p><ul><li>تثبيت التبعيات</li><li>تهيئة عملية البناء</li></ul>",
         checklist: [
@@ -140,7 +140,7 @@ export const initialColumns: ColumnType[] = [
       {
         id: "task-11",
         content: "نشر النسخة الأولية",
-        priority: "high",
+        priority: Priority.High,
         description: "<p>نشر النسخة الأولية على الخادم.</p>",
         assignedTo: "user10",
         checklist: [
@@ -151,7 +151,7 @@ export const initialColumns: ColumnType[] = [
       {
         id: "task-12",
         content: "كتابة وثائق المشروع",
-        priority: "low",
+        priority: Priority.Low,
         description: "<p>إعداد الوثائق التقنية للمشروع.</p>",
         assignedTo: "user11",
         checklist: [
@@ -162,7 +162,7 @@ export const initialColumns: ColumnType[] = [
       {
         id: "task-13",
         content: "إعداد نظام الإشعارات",
-        priority: "medium",
+        priority: Priority.Medium,
         description: "<p>تنفيذ إشعارات البريد الإلكتروني.</p>",
         assignedTo: "user12",
         checklist: [
