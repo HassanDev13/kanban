@@ -2,13 +2,14 @@ import { Column as ColumnType, Priority, User } from "./types";
 
 export const initialColumns: ColumnType[] = [
   {
-    id: "todo",
+    id: "column-todo",
     title: "للقيام",
     tasks: [
       {
         id: "task-1",
         content: "إنشاء صفحة تسجيل الدخول",
         priority: Priority.High,
+        dueDate: new Date(),
         description:
           "<p>تنفيذ صفحة تسجيل دخول آمنة مع حقول البريد الإلكتروني وكلمة المرور.</p><ul><li>تصميم واجهة المستخدم</li><li>تنفيذ التحقق من النموذج</li></ul>",
         assignedTo: "user1",

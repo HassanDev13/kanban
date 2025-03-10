@@ -15,6 +15,7 @@ export interface Task {
   priority: Priority;
   description: string;
   assignedTo?: string;
+  dueDate : Date
   checklist: ChecklistItem[];
 }
 
@@ -30,3 +31,10 @@ export interface User {
   name: string;
   avatar: string;
 }
+
+export interface PlaceholderTask {
+  id: 'placeholder';
+  content: 'placeholder';
+}
+
+export type TaskOrPlaceholder = Task | PlaceholderTask;
