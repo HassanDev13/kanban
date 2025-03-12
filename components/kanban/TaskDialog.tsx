@@ -103,7 +103,7 @@ export function TaskDialog({
       }
     }
   }, [open, mode, task, initialPriority]);
-  
+
   const handleDescriptionSave = () => {
     if (mode === "edit" && task) {
       onTaskUpdate(task.id, { description });
@@ -267,20 +267,26 @@ export function TaskDialog({
                     </Label>
                     <Select
                       value={priority}
-                      onValueChange={setPriority}
+                      onValueChange={(value) => setPriority(value as Priority)} 
                       dir="rtl"
                     >
                       <SelectTrigger id="priority" className="w-full">
                         <SelectValue placeholder="اختر الأولوية" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="low" className="text-right">
+                        <SelectItem value={Priority.Low} className="text-right">
                           منخفض
                         </SelectItem>
-                        <SelectItem value="medium" className="text-right">
+                        <SelectItem
+                          value={Priority.Medium}
+                          className="text-right"
+                        >
                           متوسط
                         </SelectItem>
-                        <SelectItem value="high" className="text-right">
+                        <SelectItem
+                          value={Priority.High}
+                          className="text-right"
+                        >
                           مرتفع
                         </SelectItem>
                       </SelectContent>
