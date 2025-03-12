@@ -49,6 +49,7 @@ interface ColumnProps {
   isOver?: boolean;
   isActive?: boolean;
 }
+
 export function Column({
   column,
   onRemoveColumn,
@@ -62,30 +63,62 @@ export function Column({
 }: ColumnProps) {
   const [isEditLimitOpen, setIsEditLimitOpen] = React.useState(false);
   const [newLimit, setNewLimit] = React.useState(column.limit);
+  const [error, setError] = React.useState("");
+
+  // Reset newLimit and error when dialog opens or column.limit changes
+  React.useEffect(() => {
+    setNewLimit(column.limit);
+    setError("");
+  }, [column.limit, isEditLimitOpen]);
 
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
       id: column.id,
       data: { type: "column" },
       transition: {
-        duration: 150, // Faster transition for smoother dragging
+        duration: 150,
         easing: "ease-in-out",
       },
     });
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition: transition || "transform 150ms ease-in-out", // Ensure consistent transition
-    opacity: isDragging ? 0.6 : 1, // Consistent opacity during drag
+    transition: transition || "transform 150ms ease-in-out",
+    opacity: isDragging ? 0.6 : 1,
   };
 
   const isAtCapacity = column.tasks.length >= column.limit;
   const isNearCapacity = column.tasks.length >= column.limit - 1;
 
+  const handleLimitChange = (value: string) => {
+    const parsedValue = parseInt(value);
+    
+    if (isNaN(parsedValue)) {
+      setNewLimit(column.tasks.length); // Default to current task count if invalid
+      setError("الرجاء إدخال رقم صحيح");
+      return;
+    }
+    
+    if (parsedValue < column.tasks.length) {
+      setNewLimit(parsedValue);
+      setError(`الحد الأقصى يجب أن يكون على الأقل ${column.tasks.length} (عدد المهام الحالية)`);
+    } else {
+      setNewLimit(parsedValue);
+      setError("");
+    }
+  };
+
   const handleLimitSave = () => {
-    if (onUpdateLimit && newLimit >= column.tasks.length) {
+    if (!onUpdateLimit) {
+      console.error("onUpdateLimit is not provided");
+      return;
+    }
+    
+    if (newLimit >= column.tasks.length) {
       onUpdateLimit(column.id, newLimit);
       setIsEditLimitOpen(false);
+    } else {
+      setError(`الحد الأقصى يجب أن يكون على الأقل ${column.tasks.length} (عدد المهام الحالية)`);
     }
   };
 
@@ -93,16 +126,14 @@ export function Column({
     <div
       ref={setNodeRef}
       style={style}
-      className={`w-full md:w-80 flex-shrink-0 ${
-        isHighlighted ? "scale-105" : ""
-      }`}
+      className={`w-full md:w-80 flex-shrink-0 ${isHighlighted ? "scale-105" : ""}`}
     >
       <Card
         className={`flex flex-col h-[calc(100vh-170px)] overflow-hidden ${
           isHighlighted ? "ring-2 ring-blue-400 shadow-lg" : ""
-        } ${isDragging ? "shadow-xl" : ""}
-  ${isOver && !isActive ? "ring-2 ring-blue-500 bg-blue-50" : ""}
-  ${isActive ? "opacity-50" : ""}`}
+        } ${isDragging ? "shadow-xl" : ""} ${
+          isOver && !isActive ? "ring-2 ring-blue-500 bg-blue-50" : ""
+        } ${isActive ? "opacity-50" : ""}`}
       >
         <CardHeader
           className="flex flex-row items-center justify-between space-y-0 pb-2 cursor-grab active:cursor-grabbing"
@@ -110,20 +141,12 @@ export function Column({
           {...listeners}
         >
           <div className="flex items-center gap-2">
-            <CardTitle className="text-sm font-medium">
-              {column.title}
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">{column.title}</CardTitle>
             <Badge
               variant={
-                isAtCapacity
-                  ? "destructive"
-                  : isNearCapacity
-                  ? "secondary"
-                  : "outline"
+                isAtCapacity ? "destructive" : isNearCapacity ? "secondary" : "outline"
               }
-              className={`transition-colors ${
-                isAtCapacity ? "text-white" : "text-black"
-              }`}
+              className={`transition-colors ${isAtCapacity ? "text-white" : "text-black"}`}
             >
               {column.tasks.length}/{column.limit}
             </Badge>
@@ -220,15 +243,14 @@ export function Column({
               id="task-limit"
               type="number"
               value={newLimit}
-              onChange={(e) => setNewLimit(parseInt(e.target.value) || 1)}
-              min={Math.max(1, column.tasks.length)}
+              onChange={(e) => handleLimitChange(e.target.value)}
+              min={column.tasks.length}
               max={20}
               className="mt-2"
             />
-            {newLimit < column.tasks.length && (
+            {error && (
               <p className="text-red-500 text-sm mt-2">
-                الحد الأقصى يجب أن يكون على الأقل {column.tasks.length} (عدد
-                المهام الحالية)
+                {error}
               </p>
             )}
           </div>
@@ -236,10 +258,7 @@ export function Column({
             <Button variant="outline" onClick={() => setIsEditLimitOpen(false)}>
               إلغاء
             </Button>
-            <Button
-              onClick={handleLimitSave}
-              disabled={newLimit < column.tasks.length}
-            >
+            <Button onClick={handleLimitSave} disabled={newLimit < column.tasks.length}>
               حفظ
             </Button>
           </DialogFooter>

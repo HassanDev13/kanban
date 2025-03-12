@@ -200,7 +200,31 @@ export function KanbanBoard() {
     setSelectedColumn(column);
     setIsTaskDialogOpen(true);
   };
+  const handleUpdateLimit = (columnId: string, newLimit: number) => {
+    // Validate the new limit
+    if (newLimit < 0) {
+      toast.error("الحد الأقصى لا يمكن أن يكون أقل من صفر");
+      return;
+    }
 
+    // Find the column and check if the new limit is less than current tasks
+    const column = columns.find((col) => col.id === columnId);
+    if (column && column.tasks.length > newLimit) {
+      toast.error(
+        `لا يمكن تعيين الحد إلى ${newLimit} لأن العمود يحتوي حاليًا على ${column.tasks.length} مهام`
+      );
+      return;
+    }
+
+    // Update the column limit
+    setColumns(
+      columns.map((col) =>
+        col.id === columnId ? { ...col, limit: newLimit } : col
+      )
+    );
+
+    toast.success(`تم تحديث الحد الأقصى للعمود إلى ${newLimit} مهام`);
+  };
   const confirmDeleteTask = (task: Task, column: ColumnType) => {
     setTaskToDelete({ columnId: column.id, taskId: task.id });
     setIsDeleteDialogOpen(true);
@@ -249,6 +273,7 @@ export function KanbanBoard() {
                 column={column}
                 onRemoveColumn={removeColumn}
                 onTaskSelect={handleTaskSelect}
+                onUpdateLimit={handleUpdateLimit}
                 onDeleteTask={confirmDeleteTask}
                 isOver={overId === column.id}
                 isActive={activeId === column.id}
