@@ -15,7 +15,7 @@ export interface Task {
   priority: Priority;
   description: string;
   assignedTo?: string;
-  dueDate : Date
+  dueDate? : Date
   checklist: ChecklistItem[];
 }
 
