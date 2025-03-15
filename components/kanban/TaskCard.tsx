@@ -41,7 +41,7 @@ export function TaskCard({
   onSelect,
   onDeleteTask,
   isActive,
-  isOver
+  isOver,
 }: TaskCardProps) {
   const {
     attributes,
@@ -78,21 +78,26 @@ export function TaskCard({
 
   return (
     <Card
-    ref={setNodeRef}
-    style={style}
-    {...attributes}
-    {...listeners}
-    className={`m-2 shadow-sm hover:shadow-md transition-all duration-200 cursor-grab ${
-      isDragging ? 'opacity-50' : 'opacity-100'
-    } ${task.priority === Priority.High ? 'border-l-4 border-red-500' : 
-        task.priority === Priority.Medium ? 'border-l-4 border-yellow-500' : ''}
-    ${isOverdue ? 'border-r-4 border-red-500' : ''}
-    ${isOver && !isActive ? 'ring-2 ring-blue-500 bg-blue-50' : ''}
-    ${isActive ? 'opacity-50' : ''}`}
-    onClick={(e) => {
-      e.preventDefault();
-      onSelect();
-    }}
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={`m-2 shadow-sm hover:shadow-md transition-all duration-200 cursor-grab ${
+        isDragging ? "opacity-50" : "opacity-100"
+      } ${
+        task.priority === Priority.High
+          ? "border-l-4 border-red-500"
+          : task.priority === Priority.Medium
+          ? "border-l-4 border-yellow-500"
+          : ""
+      }
+    ${isOverdue ? "border-r-4 border-red-500" : ""}
+    ${isOver && !isActive ? "ring-2 ring-blue-500 bg-blue-50" : ""}
+    ${isActive ? "opacity-50" : ""}`}
+      onClick={(e) => {
+        e.preventDefault();
+        onSelect();
+      }}
     >
       <CardContent className="p-3">
         <div className="flex justify-between items-start mb-2">
@@ -125,7 +130,9 @@ export function TaskCard({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Avatar className="h-6 w-6">
-                    <AvatarImage src={task.assignedTo} />
+                    <AvatarImage
+                    // src={task.assignedTo}
+                    />
                     <AvatarFallback>
                       {task.assignedTo.substring(0, 2)}
                     </AvatarFallback>
